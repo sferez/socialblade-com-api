@@ -63,8 +63,10 @@ function getOutput(data, source) {
   // Table for Twitter, Instagram, Facebook, Youtube
   let table = $('#socialblade-user-content > div:nth-child(5)').text().split('\n');
   if (source === 'youtube') {
-    // eslint-disable-next-line max-len
-    table = $('#socialblade-user-content').text().split(/\s+ESTIMATED EARNINGS\n/)[1].split(/\s+Daily Averages /)[0].split('\n');
+    table = $('#socialblade-user-content').text()
+      .split(/\s+ESTIMATED EARNINGS\n/)[1]
+      .split(/\s+Daily Averages /)[0]
+      .split('\n');
   }
   // Charts for Twitter, Instagram, Youtube
   let charts = [];
@@ -78,12 +80,12 @@ function getOutput(data, source) {
 function cleanRows(table, charts) {
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const tableRows = table
-      .map((row) => row.replace(/(\t|\s|,|\+)+/g, ''))
-      .filter((row) => row && !days.includes(row));
+    .map((row) => row.replace(/(\t|\s|,|\+)+/g, ''))
+    .filter((row) => row && !days.includes(row));
   const chartsRows = charts
-      .filter((item) => /^title: { text|^series:/g.test(item.trim()))
-      .map((item) => item.trim().replace(/title: { text: |'|\\| },|series: | }],/g, ''))
-      .map((item) => item.includes('[{ name:') ? item.split('data: ')[1] : item);
+    .filter((item) => /^title: { text|^series:/g.test(item.trim()))
+    .map((item) => item.trim().replace(/title: { text: |'|\\| },|series: | }],/g, ''))
+    .map((item) => item.includes('[{ name:') ? item.split('data: ')[1] : item);
   return { tableRows, chartsRows };
 }
 
@@ -153,9 +155,9 @@ function convertArrayToObject(source, arrays) {
           following: +col5 || 0,
           likesDelta: +col6 || 0,
           likes: +col7 || 0,
-          uploadDelta: +col8 || 0,
-          upload: +col9 || 0,
-        }
+          postsDelta: +col8 || 0,
+          posts: +col9 || 0,
+        };
       case 'charts':
       default:
         parsed = JSON.parse(col2);
@@ -179,13 +181,22 @@ function getDate(str) {
 function generateId(str) {
   const splitted = str.split(/ for |\(/);
   return `${splitted[2] || ''.slice(0, -1)}${splitted[0]}`
-      .toLowerCase()
-      .replace(/\s|\)/g, '-');
+    .toLowerCase()
+    .replace(/\s|\)/g, '-');
 }
 
-// eslint-disable-next-line require-jsdoc
+/**
+ * Convert a string unit such as 34.1M to 34100000
+ * @param {string} str String unit to convert correctly
+ * @return {string} converted string
+ */
 function convertUnit(str) {
-  return str.replace(/LIVE/g, '').replace(/K/g, '000').replace(/M/g, '000000').replace(/\./g, '');
+  const finalStr = str
+    .replace('LIVE', '')
+    .replace(/\./g, '')
+    .replace('K', '000')
+    .replace('M', '000000');
+  return str.includes('.') ? finalStr.slice(0, -1) : finalStr;
 }
 
 module.exports = {
