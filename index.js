@@ -51,7 +51,8 @@ async function socialblade(source, username, cookie = '') {
     }
     const url = generateUrl(source, username);
     const html = await callSocialblade(url, cookie);
-    const { table, charts } = getOutput(html, source);
+    const { topCardInformation, table, charts } = getOutput(html, source);
+    console.log(topCardInformation);
     const { tableRows, chartsRows } = cleanRows(table, charts);
     const itemsPerRow = { twitter: 7, instagram: 7, facebook: 5, youtube: 6 };
     let tableArrays = createArrayOfArrays(tableRows.length / itemsPerRow[source]);
@@ -61,7 +62,7 @@ async function socialblade(source, username, cookie = '') {
     chartsArrays = fillArray(chartsArrays, chartsRows, 2);
     const chartsArrayOfObjects = convertArrayToObject('charts', chartsArrays);
     // console.log(tableArrayOfObjects, chartsArrayOfObjects);
-    return { table: tableArrayOfObjects, charts: chartsArrayOfObjects };
+    return { information: topCardInformation, table: tableArrayOfObjects, charts: chartsArrayOfObjects };
   } catch (err) {
     console.log(err.message);
   }

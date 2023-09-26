@@ -1,7 +1,7 @@
 
 const cheerio = require('cheerio');
 
-const validSources = ['twitter', 'instagram', 'facebook', 'youtube'];
+const validSources = ['twitter', 'instagram', 'facebook', 'youtube', 'tiktok'];
 
 /**
  * Check if the source is valid
@@ -36,6 +36,26 @@ function generateUrl(source, username) {
  */
 function getOutput(data, source) {
   const $ = cheerio.load(data);
+
+  // Top card information
+  if (source === 'instagram') {
+    const divs = $('#YouTubeUserTopInfoBlock');
+    const l = [];
+    divs.find('span').each((index, element) => {
+      l.push($(element).text());
+    });
+    let topCardInformation = {};
+    for (let i = 0; i < l.length; i++) {
+      if (l[i].includes('Engagement Rate')) {
+        topCardInformation[l[i]] = parseFloat(l[i + 2].replace(/,/g, '').replace('%', '').replace('\n', '').trim());
+      } else if (l[i].includes('AVG Likes')) {
+        topCardInformation[l[i]] = parseFloat(l[i + 1].replace(/,/g, '').trim());
+      } else if (l[i].includes('AVG Comments')) {
+        topCardInformation[l[i]] = parseFloat(l[i + 1].replace(/,/g, '').trim());
+      }
+    }
+  }
+
   // Table for Twitter, Instagram, Facebook, Youtube
   let table = $('#socialblade-user-content > div:nth-child(5)').text().split('\n');
   if (source === 'youtube') {
@@ -47,7 +67,7 @@ function getOutput(data, source) {
   if (source !== 'facebook') {
     charts = $('script').contents().get(5).data.split('\n');
   }
-  return { table, charts };
+  return { topCardInformation, table, charts };
 }
 
 // eslint-disable-next-line require-jsdoc
@@ -149,7 +169,7 @@ function generateId(str) {
 
 // eslint-disable-next-line require-jsdoc
 function convertUnit(str) {
-  return str.replace('K', '000').replace('M', '000000');
+  return str.replace(/LIVE/g, '').replace(/K/g, '000').replace(/M/g, '000000').replace(/\./g, '');
 }
 
 module.exports = {
