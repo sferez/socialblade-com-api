@@ -56,12 +56,11 @@ async function socialblade(source, username, cookie = '') {
     const itemsPerRow = { twitter: 7, instagram: 7, facebook: 5, youtube: 6, tiktok: 9 };
     let tableArrays = createArrayOfArrays(tableRows.length / itemsPerRow[source]);
     tableArrays = fillArray(tableArrays, tableRows, itemsPerRow[source]);
-    console.log(tableArrays);
     const tableArrayOfObjects = convertArrayToObject(source, tableArrays);
     let chartsArrays = createArrayOfArrays(chartsRows.length / 2);
     chartsArrays = fillArray(chartsArrays, chartsRows, 2);
     const chartsArrayOfObjects = convertArrayToObject('charts', chartsArrays);
-    return { information: topCardInformation, table: tableArrayOfObjects, charts: chartsArrayOfObjects };
+    return {information: topCardInformation, table: tableArrayOfObjects, charts: chartsArrayOfObjects };
   } catch (err) {
     console.log(err.message);
   }

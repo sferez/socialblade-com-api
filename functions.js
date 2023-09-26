@@ -39,24 +39,17 @@ function getOutput(data, source) {
 
   // Top card information
   if (source === 'instagram') {
-    const divs = $('#YouTubeUserTopInfoBlock');
-    const l = [];
-    divs.find('span').each((index, element) => {
-      l.push($(element).text());
-    });
-    var topCardInformation = {};
-    for (let i = 0; i < l.length; i++) {
-      if (l[i].includes('Engagement Rate')) {
-        topCardInformation[l[i]] = parseFloat(l[i + 2].replace(/,/g, '').replace('%', '').replace('\n', '').trim());
-      } else if (l[i].includes('AVG Likes')) {
-        topCardInformation[l[i]] = parseFloat(l[i + 1].replace(/,/g, '').trim());
-      } else if (l[i].includes('AVG Comments')) {
-        topCardInformation[l[i]] = parseFloat(l[i + 1].replace(/,/g, '').trim());
-      }
-    }
+    const engRate = $('#YouTubeUserTopInfoBlock > div:nth-child(5) > span:nth-child(4)').text();
+    const avgLikes = $('#YouTubeUserTopInfoBlock > div:nth-child(6) > span:nth-child(3)').text();
+    const avgComments = $('#YouTubeUserTopInfoBlock > div:nth-child(7) > span:nth-child(3)').text();
+    var topCardInformation = {
+      'Engagement Rate': parseFloat(engRate.replace(/,/g, '').replace('%', '').trim()),
+      'AVG Likes': parseFloat(avgLikes.replace(/,/g, '').trim()),
+      'AVG Comments': parseFloat(avgComments.replace(/,/g, '').trim()),
+    };
   } else {
     var topCardInformation = {
-      'info': 'test'
+      'information': 'N/A',
     };
   }
 
@@ -73,7 +66,7 @@ function getOutput(data, source) {
   if (source !== 'facebook') {
     charts = $('script').contents().get(5).data.split('\n');
   }
-  return { topCardInformation, table, charts };
+  return {topCardInformation, table, charts };
 }
 
 // eslint-disable-next-line require-jsdoc
