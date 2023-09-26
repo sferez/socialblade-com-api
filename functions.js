@@ -44,7 +44,7 @@ function getOutput(data, source) {
     divs.find('span').each((index, element) => {
       l.push($(element).text());
     });
-    let topCardInformation = {};
+    var topCardInformation = {};
     for (let i = 0; i < l.length; i++) {
       if (l[i].includes('Engagement Rate')) {
         topCardInformation[l[i]] = parseFloat(l[i + 2].replace(/,/g, '').replace('%', '').replace('\n', '').trim());
@@ -54,6 +54,10 @@ function getOutput(data, source) {
         topCardInformation[l[i]] = parseFloat(l[i + 1].replace(/,/g, '').trim());
       }
     }
+  } else {
+    var topCardInformation = {
+      'info': 'test'
+    };
   }
 
   // Table for Twitter, Instagram, Facebook, Youtube
@@ -110,7 +114,7 @@ function fillArray(arrays, tableRows, itemsPerRow) {
 // eslint-disable-next-line require-jsdoc
 function convertArrayToObject(source, arrays) {
   return arrays.map((array) => {
-    const [col1, col2, col3, col4, col5, col6, col7] = array;
+    const [col1, col2, col3, col4, col5, col6, col7, col8, col9] = array;
     let parsed;
     switch (source) {
       case 'twitter':
@@ -140,6 +144,18 @@ function convertArrayToObject(source, arrays) {
           viewsDelta: +col4 || 0,
           views: +col5 || 0,
         };
+      case 'tiktok':
+        return {
+          date: getDate(col1),
+          followersDelta: +col2 || 0,
+          followers: +col3 || 0,
+          followingDelta: +col4 || 0,
+          following: +col5 || 0,
+          likesDelta: +col6 || 0,
+          likes: +col7 || 0,
+          uploadDelta: +col8 || 0,
+          upload: +col9 || 0,
+        }
       case 'charts':
       default:
         parsed = JSON.parse(col2);
